@@ -10,9 +10,79 @@ class MacroMealMenuOrderPage extends StatefulWidget {
 class _MacroMealMenuOrderPageState extends State<MacroMealMenuOrderPage> {
   bool _menuOpen = false;
 
-  bool get _showMenuOverlay {
-    return _menuOpen && (_menuScrollHasMoreLeft || _menuScrollHasMoreRight);
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
+    final menuHeight = height * 0.5;
+    final orderWidth = width * 0.4;
+    return Scaffold(
+      body: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: Container(
+              color: Colors.red,
+              height: height - menuHeight,
+              width: width - orderWidth,
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: AnimatedContainer(
+              width: _menuOpen ? width - orderWidth : width,
+              height: menuHeight,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.linearToEaseOut,
+              child: MacroMealMenuWithHasMoreOverOverlaySection(
+                  menuOpen: _menuOpen, height: height, menuHeight: menuHeight),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: AnimatedContainer(
+                color: Colors.green,
+                width: orderWidth,
+                height: _menuOpen ? height : height - menuHeight,
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.linearToEaseOut),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              _menuOpen = !_menuOpen;
+            });
+          },
+          child:
+              Icon(Icons.open_in_full, color: Theme.of(context).primaryColor)),
+    );
   }
+}
+
+class MacroMealMenuWithHasMoreOverOverlaySection extends StatefulWidget {
+  final bool menuOpen;
+  final double height;
+  final double menuHeight;
+  MacroMealMenuWithHasMoreOverOverlaySection(
+      {Key? key,
+      required this.menuOpen,
+      required this.height,
+      required this.menuHeight})
+      : super(key: key);
+
+  @override
+  _MacroMealMenuWithHasMoreOverOverlaySectionState createState() =>
+      _MacroMealMenuWithHasMoreOverOverlaySectionState();
+}
+
+class _MacroMealMenuWithHasMoreOverOverlaySectionState
+    extends State<MacroMealMenuWithHasMoreOverOverlaySection> {
+  bool get _showMenuOverlay =>
+      widget.menuOpen && (_menuScrollHasMoreLeft || _menuScrollHasMoreRight);
 
   late bool _menuScrollHasMoreLeft;
   late bool _menuScrollHasMoreRight;
@@ -45,107 +115,37 @@ class _MacroMealMenuOrderPageState extends State<MacroMealMenuOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-
-    final menuHeight = height * 0.6;
-    final orderWidth = width * 0.4;
-    return Scaffold(
-      body: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Container(
-              color: Colors.red,
-              height: height - menuHeight,
-              width: width - orderWidth,
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: AnimatedContainer(
-              width: _menuOpen ? width - orderWidth : width,
-              height: menuHeight,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.linearToEaseOut,
-              child: Stack(children: [
-                MacroMealMenuSection(
-                  width: width,
-                  height: height,
-                  scrollController: _menuScrollController,
-                ),
-                if (_showMenuOverlay) ...[
-                  if (_menuScrollHasMoreRight)
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: MenuHasMoreOverlay(
-                            height: menuHeight, iconData: Icons.chevron_right)),
-                  if (_menuScrollHasMoreLeft)
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: MenuHasMoreOverlay(
-                            height: menuHeight, iconData: Icons.chevron_left))
-                ]
-              ]),
-            ),
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: AnimatedContainer(
-                color: Colors.green,
-                width: orderWidth,
-                height: _menuOpen ? height : height - menuHeight,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.linearToEaseOut),
-          ),
-        ],
+    return Stack(children: [
+      MacroMealMenuSection(
+        height: widget.height,
+        scrollController: _menuScrollController,
       ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.white,
-          onPressed: () {
-            setState(() {
-              _menuOpen = !_menuOpen;
-            });
-          },
-          child:
-              Icon(Icons.open_in_full, color: Theme.of(context).primaryColor)),
-    );
-  }
-}
-
-class MenuHasMoreOverlay extends StatelessWidget {
-  final IconData iconData;
-  final double height;
-  const MenuHasMoreOverlay(
-      {Key? key, required this.iconData, required this.height})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: 0.5,
-      child: Container(
-          height: height,
-          width: 50,
-          color: Colors.black,
-          child: Icon(iconData, color: Colors.white)),
-    );
+      if (_showMenuOverlay) ...[
+        if (_menuScrollHasMoreRight)
+          Align(
+              alignment: Alignment.centerRight,
+              child: MenuHasMoreOverlay(
+                  height: widget.menuHeight, iconData: Icons.chevron_right)),
+        if (_menuScrollHasMoreLeft)
+          Align(
+              alignment: Alignment.centerLeft,
+              child: MenuHasMoreOverlay(
+                  height: widget.menuHeight, iconData: Icons.chevron_left))
+      ]
+    ]);
   }
 }
 
 class MacroMealMenuSection extends StatelessWidget {
-  final double width;
   final double height;
   final ScrollController? scrollController;
   const MacroMealMenuSection(
-      {Key? key,
-      required this.width,
-      required this.height,
-      this.scrollController})
+      {Key? key, required this.height, this.scrollController})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       controller: scrollController,
       scrollDirection: Axis.horizontal,
@@ -171,6 +171,26 @@ class MacroMealMenuSection extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class MenuHasMoreOverlay extends StatelessWidget {
+  final IconData iconData;
+  final double height;
+  const MenuHasMoreOverlay(
+      {Key? key, required this.iconData, required this.height})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: 0.5,
+      child: Container(
+          height: height,
+          width: 50,
+          color: Colors.black,
+          child: Icon(iconData, color: Colors.white)),
     );
   }
 }
