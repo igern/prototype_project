@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class MacroMealMenuOrderPage extends StatefulWidget {
@@ -79,30 +77,14 @@ class _MacroMealMenuOrderPageState extends State<MacroMealMenuOrderPage> {
                 if (_showMenuOverlay) ...[
                   if (_menuScrollHasMoreRight)
                     Align(
-                      alignment: Alignment.centerRight,
-                      child: Opacity(
-                        opacity: 0.5,
-                        child: Container(
-                            height: menuHeight,
-                            width: 50,
-                            color: Colors.black,
-                            child:
-                                Icon(Icons.chevron_right, color: Colors.white)),
-                      ),
-                    ),
+                        alignment: Alignment.centerRight,
+                        child: MenuHasMoreOverlay(
+                            height: menuHeight, iconData: Icons.chevron_right)),
                   if (_menuScrollHasMoreLeft)
                     Align(
-                      alignment: Alignment.centerLeft,
-                      child: Opacity(
-                        opacity: 0.5,
-                        child: Container(
-                            height: menuHeight,
-                            width: 50,
-                            color: Colors.black,
-                            child:
-                                Icon(Icons.chevron_left, color: Colors.white)),
-                      ),
-                    )
+                        alignment: Alignment.centerLeft,
+                        child: MenuHasMoreOverlay(
+                            height: menuHeight, iconData: Icons.chevron_left))
                 ]
               ]),
             ),
@@ -131,6 +113,26 @@ class _MacroMealMenuOrderPageState extends State<MacroMealMenuOrderPage> {
   }
 }
 
+class MenuHasMoreOverlay extends StatelessWidget {
+  final IconData iconData;
+  final double height;
+  const MenuHasMoreOverlay(
+      {Key? key, required this.iconData, required this.height})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: 0.5,
+      child: Container(
+          height: height,
+          width: 50,
+          color: Colors.black,
+          child: Icon(iconData, color: Colors.white)),
+    );
+  }
+}
+
 class MacroMealMenuSection extends StatelessWidget {
   final double width;
   final double height;
@@ -152,326 +154,20 @@ class MacroMealMenuSection extends StatelessWidget {
         height: height,
         child: Row(
           children: [
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/1/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/2/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/3/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/4/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/5/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/6/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/7/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/8/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/9/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/10/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/11/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/12/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/13/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/14/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/15/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/16/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/17/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/18/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/19/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/20/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/21/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/22/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/23/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/24/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/25/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/26/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/27/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/28/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/29/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/30/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/31/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/32/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/33/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/34/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/35/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/36/300/300'))))),
-              ]),
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/37/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/38/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/39/300/300'))))),
-                Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    'https://picsum.photos/id/40/300/300'))))),
-              ]),
-            ),
+            for (int x = 1; x <= 10; x++)
+              Expanded(
+                  child: Column(
+                children: [
+                  for (int y = 1; y <= 4; y++)
+                    Expanded(
+                        child: Container(
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                        'https://picsum.photos/id/${x * y}/300/300'))))),
+                ],
+              )),
           ],
         ),
       ),
