@@ -25,6 +25,7 @@ class MultiSlider extends StatefulWidget {
 
 class _MultiSliderState extends State<MultiSlider> {
   late List<double> _thumbXPositions;
+  late List<SliderSection> _sliderSections;
 
   int _currentThumbDragIndex = 0;
   int _divisions = 100;
@@ -32,10 +33,33 @@ class _MultiSliderState extends State<MultiSlider> {
   List<double> get _steps =>
       List.generate(_divisions + 1, (index) => 100 / _divisions * index);
 
+  List<SliderSectionData> get _sliderSectionDataList {
+    List<SliderSectionData> sliderSectionDataList = [];
+    for (int i = 0; i < _sliderSections.length; i++) {
+      late double percent;
+      if (i == 0) {
+        percent = _thumbXPositions[0];
+      } else if (i == _sliderSections.length - 1) {
+        percent = 1 - _thumbXPositions[i - 1];
+      } else {
+        percent = _thumbXPositions[i] - _thumbXPositions[i - 1];
+      }
+      sliderSectionDataList.add(SliderSectionData(
+          _sliderSections[i].color, _sliderSections[i].label, percent));
+    }
+    return sliderSectionDataList;
+  }
+
   @override
   void initState() {
     super.initState();
-    _thumbXPositions = [0.5, 0.8];
+    _thumbXPositions = [0.3, 0.6, 0.9];
+    _sliderSections = [
+      SliderSection(Colors.red, 'Protein'),
+      SliderSection(Colors.green, 'Carbohydrates'),
+      SliderSection(Colors.blue, 'Fat'),
+      SliderSection(Colors.purple, 'Fibers'),
+    ];
   }
 
   @override
@@ -52,10 +76,10 @@ class _MultiSliderState extends State<MultiSlider> {
       },
       child: Container(
           width: 600,
-          height: 30,
+          height: 60,
           child: CustomPaint(
               painter: MultiSliderPainter(
-                  _thumbXPositions[0], _thumbXPositions[1]))),
+                  _thumbXPositions, _sliderSectionDataList))),
     );
   }
 
@@ -74,6 +98,21 @@ class _MultiSliderState extends State<MultiSlider> {
           _thumbXPositions[_currentThumbDragIndex] = closestDivision(max(
               dx / 600,
               _thumbXPositions[_currentThumbDragIndex - 1] +
+                  100 / _divisions / 100));
+        });
+      }
+    } else {
+      if (_thumbXPositions[_currentThumbDragIndex] <=
+              _thumbXPositions[_currentThumbDragIndex + 1] &&
+          _thumbXPositions[_currentThumbDragIndex] >=
+              _thumbXPositions[_currentThumbDragIndex - 1]) {
+        setState(() {
+          _thumbXPositions[_currentThumbDragIndex] = closestDivision(min(
+              max(
+                  dx / 600,
+                  _thumbXPositions[_currentThumbDragIndex - 1] +
+                      100 / _divisions / 100),
+              _thumbXPositions[_currentThumbDragIndex + 1] -
                   100 / _divisions / 100));
         });
       }
@@ -107,63 +146,106 @@ class _MultiSliderState extends State<MultiSlider> {
   }
 }
 
-class MultiSliderPainter extends CustomPainter {
-  final double firstThumb;
-  final double secondThumb;
+class SliderSection {
+  final Color color;
+  final String label;
 
-  MultiSliderPainter(this.firstThumb, this.secondThumb);
+  SliderSection(this.color, this.label);
+}
+
+class MultiSliderPainter extends CustomPainter {
+  final List<double> thumbs;
+  final List<SliderSectionData> sections;
+
+  MultiSliderPainter(this.thumbs, this.sections)
+      : assert(thumbs.length > 0),
+        assert(sections.length == thumbs.length + 1);
 
   @override
   void paint(Canvas canvas, Size size) {
-    var centerY = size.height / 2;
-
     var thumbWidth = 40.0;
     var thumbHeight = 30.0;
+    var centerSliderY = size.height - thumbHeight / 2;
 
-    var firstThumbRect = Rect.fromCenter(
-        center: Offset(size.width * firstThumb, centerY),
-        width: thumbWidth,
-        height: thumbHeight);
+    for (int i = 0; i < sections.length; i++) {
+      SliderSectionData section = sections[i];
 
-    var secondThumbRect = Rect.fromCenter(
-        center: Offset(size.width * secondThumb, centerY),
-        width: thumbWidth,
-        height: thumbHeight);
+      var sectionLineBrush = Paint()
+        ..color = section.color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 20;
 
-    var firstSectionLineBrush = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 20;
+      var sectionTextSpan = TextSpan(
+          text:
+              '${section.label} ${(section.percent * 100).toStringAsFixed(0)}%',
+          style: TextStyle(color: Colors.black));
 
-    var secondSectionLineBrush = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 20;
+      var sectionTextPainter = TextPainter(
+          text: sectionTextSpan, maxLines: 1, textDirection: TextDirection.ltr);
+      if (i == 0) {
+        canvas.drawLine(Offset(0, centerSliderY),
+            Offset(size.width * thumbs[0], centerSliderY), sectionLineBrush);
 
-    var thirdSectionLineBrush = Paint()
-      ..color = Colors.blue
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 20;
+        sectionTextPainter.layout(minWidth: 0, maxWidth: 600);
+
+        sectionTextPainter.paint(
+            canvas,
+            Offset(
+                size.width * thumbs[0] / 2 - sectionTextPainter.width / 2, 0));
+      } else if (i == sections.length - 1) {
+        canvas.drawLine(Offset(size.width * thumbs[i - 1], centerSliderY),
+            Offset(size.width, centerSliderY), sectionLineBrush);
+
+        var sectionWidth = size.width - size.width * thumbs.last;
+        sectionTextPainter.layout(minWidth: 0, maxWidth: 600);
+
+        sectionTextPainter.paint(
+            canvas,
+            Offset(
+                size.width * thumbs.last +
+                    sectionWidth / 2 -
+                    sectionTextPainter.width / 2,
+                0));
+      } else {
+        canvas.drawLine(Offset(size.width * thumbs[i - 1], centerSliderY),
+            Offset(size.width * thumbs[i], centerSliderY), sectionLineBrush);
+
+        var sectionWidth = size.width * thumbs[i] - size.width * thumbs[i - 1];
+        sectionTextPainter.layout(minWidth: 0, maxWidth: 600);
+
+        sectionTextPainter.paint(
+            canvas,
+            Offset(
+                size.width * thumbs[i - 1] +
+                    sectionWidth / 2 -
+                    sectionTextPainter.width / 2,
+                0));
+      }
+    }
 
     var thumbFill = Paint()..color = Colors.black;
 
-    canvas.drawLine(Offset(0, centerY),
-        Offset(size.width * firstThumb, centerY), firstSectionLineBrush);
-    canvas.drawLine(Offset(size.width * firstThumb, centerY),
-        Offset(size.width * secondThumb, centerY), secondSectionLineBrush);
-    canvas.drawLine(Offset(size.width * secondThumb, centerY),
-        Offset(size.width, centerY), thirdSectionLineBrush);
+    for (int i = 0; i < thumbs.length; i++) {
+      var thumbRect = Rect.fromCenter(
+          center: Offset(size.width * thumbs[i], centerSliderY),
+          width: thumbWidth,
+          height: thumbHeight);
 
-    canvas.drawRRect(
-        RRect.fromRectAndRadius(firstThumbRect, Radius.circular(10)),
-        thumbFill);
-    canvas.drawRRect(
-        RRect.fromRectAndRadius(secondThumbRect, Radius.circular(10)),
-        thumbFill);
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(thumbRect, Radius.circular(10)), thumbFill);
+    }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return true;
   }
+}
+
+class SliderSectionData {
+  final Color color;
+  final String label;
+  final double percent;
+
+  SliderSectionData(this.color, this.label, this.percent);
 }
